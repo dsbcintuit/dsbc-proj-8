@@ -20,6 +20,13 @@ githublink = 'https://github.com/dsbcintuit/dsbc-proj-8'
 ###### Import a dataframe #######
 df = pd.read_csv("apps/world_cheese_awards_2021.csv")
 
+new=df.drop(['county', 'Unnamed: 0'], axis=1)
+new_one=new['rating'].value_counts()
+rating_count=new['rating'].value_counts().copy()
+rating_count.columns=['rating', 'rating_count']
+
+variables_list=['rating', 'rating_count']
+
 ########### Initiate the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -46,12 +53,12 @@ app.layout = html.Div([
 @app.callback(Output('display-value', 'figure'),
               [Input('dropdown', 'value')])
 def display_value(continuous_var):
-    grouped_mean=df.groupby(['Rating', 'Number of Countries'])[continuous_var].mean()
+    grouped_mean=df.groupby(['Rating', 'Rating Count'])[continuous_var].mean()
     results=pd.DataFrame(grouped_mean)
     # Create a grouped bar chart
     mydata1 = go.Bar(
         x=results.loc['Rating'].index,
-        y=results.loc['Number of Countries'][continuous_var],
+        y=results.loc['Rating Count'][continuous_var],
         name='Number of Countries',
         marker=dict(color=color1)
     )
@@ -68,12 +75,12 @@ def display_value(continuous_var):
 #         marker=dict(color=color3)
 #     )
 
-#     mylayout = go.Layout(
-#         title='Grouped bar chart',
-#         xaxis = dict(title = 'Port of Embarkation'), # x-axis label
-#         yaxis = dict(title = str(continuous_var)), # y-axis label
+    mylayout = go.Layout(
+        title='Bar Chart',
+        xaxis = dict(title = 'Number of Countries'), # x-axis label
+        yaxis = dict(title = str(continuous_var)), # y-axis label
 
-#     )
+    )
     fig = go.Figure(data=[mydata1
                           # , mydata2, mydata3
                          ], layout=mylayout)
